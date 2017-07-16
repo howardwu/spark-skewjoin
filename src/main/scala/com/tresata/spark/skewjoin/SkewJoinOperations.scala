@@ -1,13 +1,12 @@
 package com.tresata.spark.skewjoin
 
-import java.util.{ Random => JRandom }
-import scala.reflect.ClassTag
+import java.util.{Random => JRandom}
 
+import scala.reflect.ClassTag
 import org.apache.spark.rdd.RDD
 import org.apache.spark.Partitioner
 import org.apache.spark.Partitioner.defaultPartitioner
-
-import com.twitter.algebird.{ CMS, CMSHasher, CMSMonoid }
+import com.twitter.algebird.{CMS, CMSHasher, CMSMonoid}
 
 case class CMSParams(eps: Double = 0.005, delta: Double = 1e-8, seed: Int = 1) {
   def getCMSMonoid[K: Ordering: CMSHasher]: CMSMonoid[K] = CMS.monoid[K](eps, delta, seed)
@@ -22,6 +21,8 @@ class SkewJoinOperations[K: ClassTag: Ordering: CMSHasher, V: ClassTag](rdd: RDD
   
   private def createRddCMS[K](rdd: RDD[K], cmsMonoid: CMSMonoid[K]): CMS[K] =
     rdd.map(k => cmsMonoid.create(k)).reduce(cmsMonoid.plus(_, _))
+
+  def getRDD: RDD[(K, V)] = rdd
 
   def skewCogroup[W: ClassTag](other: RDD[(K, W)], partitioner: Partitioner,
     skewReplication: SkewReplication = DefaultSkewReplication(), cmsParams: CMSParams = CMSParams()): RDD[(K, (Iterable[V], Iterable[W]))] = {
@@ -86,6 +87,17 @@ class SkewJoinOperations[K: ClassTag: Ordering: CMSHasher, V: ClassTag](rdd: RDD
   
   def skewRightOuterJoin[W: ClassTag](other: RDD[(K, W)]): RDD[(K, (Option[V], W))] =
     skewRightOuterJoin(other, defaultPartitioner(rdd, other))
+}
+
+object SkewJoinOperations {
+  private[skewjoin] def apply[K: ClassTag: Ordering: CMSHasher, V: ClassTag](rdd: RDD[(K, V)]): SkewJoinOperations[K, V] = {
+    new SkewJoinOperations[K, V](rdd)
+  }
+
+//  def apply[K: ClassTag: Ordering: CMSHasher, V: ClassTag](rdd: RDD[(K, V)])(implicit keyOrdering: Ordering[K]): SkewJoinOperations[K, V] = {
+//    val keyHashOrdering = new HashOrdering(keyOrdering)
+//    new SkewJoinOperations[K, V](rdd)
+//  }
 }
 
 trait Dsl {

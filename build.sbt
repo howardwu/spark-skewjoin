@@ -4,10 +4,11 @@ lazy val root = (project in file(".")).settings(
   version := "0.6.0-SNAPSHOT",
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.10.6", "2.11.8"),
-  javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.7", "-target", "1.7"),
-  scalacOptions ++= Seq("-unchecked", "-deprecation", "-target:jvm-1.7", "-feature", "-language:_"),
+  javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.8", "-target", "1.8"),
+  scalacOptions ++= Seq("-unchecked", "-deprecation", "-target:jvm-1.8", "-feature", "-language:_"),
   testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oF"),
   libraryDependencies ++= Seq(
+    "com.novocode" % "junit-interface" % "0.11" % "test",
     "com.twitter" %% "algebird-core" % "0.13.0" % "compile",
     "org.apache.spark" %% "spark-core" % "2.2.0" % "provided",
     "org.scalatest" %% "scalatest" % "3.0.3" % "test"

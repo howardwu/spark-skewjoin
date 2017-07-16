@@ -1,6 +1,7 @@
 package com.tresata.spark.skewjoin
 
-import org.apache.spark.{ SparkConf, SparkContext }
+import org.apache.spark.api.java.JavaSparkContext
+import org.apache.spark.{SparkConf, SparkContext}
 
 object SparkSuite {
   lazy val sc = {
@@ -11,4 +12,7 @@ object SparkSuite {
       .set("Spark.ui.enable", "false")
     new SparkContext(conf)
   }
+
+  lazy val jsc = new JavaSparkContext(sc)
+  def javaSparkContext() = jsc
 }
