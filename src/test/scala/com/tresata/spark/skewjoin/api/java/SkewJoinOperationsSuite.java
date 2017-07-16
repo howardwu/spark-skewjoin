@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.tresata.spark.skewjoin.SparkSuite$;
+import com.tresata.spark.skewjoin.api.java.CompanionHashers.CMSHasherInteger;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -20,15 +21,6 @@ public class SkewJoinOperationsSuite implements Serializable {
 
   private <X, Y> Tuple2<X, Y> tuple2(X x, Y y) {
     return new Tuple2<X, Y>(x, y);
-  }
-
-  class CMSHasherInteger extends CMSHasherWrapper<Integer> {
-    @Override
-    public int hash(int a, int b, int width, Integer x) {
-      int unModded = (x * a) + b;
-      long modded = (unModded + (unModded >> 32)) & Integer.MAX_VALUE;
-      return ((int) modded) % width;
-    }
   }
 
   @Test

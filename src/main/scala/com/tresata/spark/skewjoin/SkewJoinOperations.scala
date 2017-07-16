@@ -93,11 +93,6 @@ object SkewJoinOperations {
   private[skewjoin] def apply[K: ClassTag: Ordering: CMSHasher, V: ClassTag](rdd: RDD[(K, V)]): SkewJoinOperations[K, V] = {
     new SkewJoinOperations[K, V](rdd)
   }
-
-//  def apply[K: ClassTag: Ordering: CMSHasher, V: ClassTag](rdd: RDD[(K, V)])(implicit keyOrdering: Ordering[K]): SkewJoinOperations[K, V] = {
-//    val keyHashOrdering = new HashOrdering(keyOrdering)
-//    new SkewJoinOperations[K, V](rdd)
-//  }
 }
 
 trait Dsl {

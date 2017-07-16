@@ -18,18 +18,18 @@ object SkewJoinOperations {
 
   private def fakeClassTag[T]: ClassTag[T] = ClassTag.AnyRef.asInstanceOf[ClassTag[T]]
 
-  private def skewJoin[K, V](javaPairRDD: JavaPairRDD[K, V], keyComparator : Comparator[K], keyOrdering : CMSHasher[K]): SSkewJoinOperations[K, V] = {
+  private def skewJoin[K, V](javaPairRDD: JavaPairRDD[K, V], keyComparator : Comparator[K], keyHasher : CMSHasher[K]): SSkewJoinOperations[K, V] = {
     implicit def kClassTag: ClassTag[K] = javaPairRDD.kClassTag
     implicit def vClassTag: ClassTag[V] = javaPairRDD.vClassTag
     implicit def kOrdering: Ordering[K] = comparatorToOrdering(keyComparator)
-    implicit def CMSHasher: CMSHasher[K] = keyOrdering
+    implicit def CMSHasher: CMSHasher[K] = keyHasher
     SSkewJoinOperations(javaPairRDD.rdd)
   }
 }
 
 class SkewJoinOperations[K, V] private (sSkewJoinOperations: SSkewJoinOperations[K, V]) extends Serializable {
-  def this(javaPairRDD: JavaPairRDD[K, V], keyComparator : Comparator[K], keyOrdering : CMSHasher[K]) =
-    this(SkewJoinOperations.skewJoin(javaPairRDD, keyComparator, keyOrdering))
+  def this(javaPairRDD: JavaPairRDD[K, V], keyComparator : Comparator[K], keyHasher : CMSHasher[K]) =
+    this(SkewJoinOperations.skewJoin(javaPairRDD, keyComparator, keyHasher))
 
   import SkewJoinOperations._
 
